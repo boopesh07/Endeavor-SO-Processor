@@ -1,0 +1,73 @@
+.App {
+    min-height: 100vh;
+    background-color: #f8f9fa;
+}
+
+.drop-area {
+    background-color: #ffffff;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.drop-area:hover {
+    background-color: #f8f9fa;
+    border-color: #0d6efd !important;
+}
+
+.card {
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    font-weight: 600;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 600;
+}
+
+.lead {
+    color: #6c757d;
+}
+
+/* Table styles */
+.table thead th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    border-bottom-width: 1px;
+}
+
+/* Editable field styles */
+.editable-field {
+    position: relative;
+    padding: 3px 6px;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.editable-field:hover {
+    background-color: rgba(13, 110, 253, 0.1);
+}
+
+.editable-field i {
+    opacity: 0;
+    font-size: 0.75rem;
+    color: #6c757d;
+    transition: all 0.2s ease;
+}
+
+.editable-field:hover i {
+    opacity: 1;
+}
