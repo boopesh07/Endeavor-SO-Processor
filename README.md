@@ -2,6 +2,9 @@
 
 An automated document processing application for sales order entry. This application extracts data from sales order PDFs, matches items with a product catalog, and stores the processed orders in MongoDB.
 
+## Video Explanation
+[Watch a detailed walkthrough of the application](https://drive.google.com/file/d/1ijDM_huSl2nSlIeEDqxvoKVcmhRUMLrq/view?usp=sharing)
+
 ## Project Structure
 
 - **backend/**: FastAPI backend application
@@ -90,10 +93,13 @@ An automated document processing application for sales order entry. This applica
 - MongoDB with Motor (async driver)
 - Python httpx for API requests
 - Pandas for CSV generation
+- OpenAI API for field normalization
 
 ### Frontend
 - React
 - React Router for navigation
 - React Bootstrap for UI
 - Axios for API communication
-- React Dropzone for file uploads 
+- React Dropzone for file uploads
+
+
