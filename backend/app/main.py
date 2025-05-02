@@ -1,12 +1,12 @@
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
+from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 from dotenv import load_dotenv
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.routers import sales_orders
-from app.utils.json_storage import ensure_storage_dir
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -15,8 +15,11 @@ logger = logging.getLogger(__name__)
 # Load environment variables
 load_dotenv()
 
-class RequestMiddleware(BaseHTTPMiddleware):
+class MongoDBCheckMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
+        if not hasattr(request.app, "mongodb") or request.app.mongodb is None:
+            logger.error("MongoDB connection not available")
+            # Still proceed to let the route handler handle the error gracefully
         try:
             response = await call_next(request)
             return response
@@ -39,18 +42,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Add request middleware
-app.add_middleware(RequestMiddleware)
+# Add MongoDB check middleware
+app.add_middleware(MongoDBCheckMiddleware)
 
-# JSON storage initialization
+# MongoDB connection
 @app.on_event("startup")
-async def startup_storage():
+async def startup_db_client():
     try:
-        # Ensure storage directory exists
-        ensure_storage_dir()
-        logger.info("JSON storage initialized")
+        mongodb_uri = os.getenv("MONGODB_URI", "mongodb://localhost:27017")
+        app.mongodb_client = AsyncIOMotorClient(mongodb_uri)
+        app.mongodb = app.mongodb_client[os.getenv("MONGODB_DB", "sales_orders_db")]
+        
+        # Test the connection
+        await app.mongodb.command("ping")
+        logger.info("Connected to MongoDB")
     except Exception as e:
-        logger.error(f"Failed to initialize JSON storage: {str(e)}")
+        logger.error(f"Failed to connect to MongoDB: {str(e)}")
+        # Still set the client to allow the app to start
+        app.mongodb_client = None
+        app.mongodb = None
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    if app.mongodb_client:
+        app.mongodb_client.close()
+        logger.info("MongoDB connection closed")
 
 # Include routers
 app.include_router(sales_orders.router, prefix="/api")
@@ -62,9 +78,24 @@ async def root():
 @app.get("/health")
 async def health_check():
     """
-    Health check endpoint to verify the application is running
+    Health check endpoint to verify the application and database are running
     """
-    return {
+    health = {
         "status": "healthy",
-        "storage": "JSON"
-    } 
+        "mongodb": False
+    }
+    
+    if app.mongodb_client:
+        try:
+            # Check if MongoDB is responding
+            await app.mongodb.command("ping")
+            health["mongodb"] = True
+        except Exception as e:
+            logger.error(f"MongoDB health check failed: {str(e)}")
+            health["status"] = "unhealthy"
+            health["error"] = str(e)
+    else:
+        health["status"] = "unhealthy"
+        health["error"] = "MongoDB client not initialized"
+        
+    return health 

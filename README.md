@@ -1,105 +1,145 @@
-# Sales Order Processor
+# Endeavor Sales Order Processor
 
-An automated document processing application for sales order entry. This application extracts data from sales order PDFs, matches items with a product catalog, and stores the processed orders in MongoDB.
+A web application for extracting, normalizing, and processing sales orders from PDF documents.
 
-## Video Explanation
-[Watch a detailed walkthrough of the application](https://drive.google.com/file/d/1ijDM_huSl2nSlIeEDqxvoKVcmhRUMLrq/view?usp=sharing)
+## Video Walkthrough
 
-## Project Structure
-
-- **backend/**: FastAPI backend application
-- **frontend/**: React frontend application
+[Watch the video walkthrough](https://example.com/video-link)
 
 ## Features
 
-- Upload PDF sales orders
-- Extract line items using an external API
-- Allow editing of extracted data
-- Match items with product catalog using external matching APIs
-- Store processed orders in MongoDB
-- Download processed orders as CSV
+- PDF data extraction with intelligent field detection
+- Field normalization using OpenAI (Unit Cost → Unit Price, Qty → Quantity)
+- MongoDB storage for processed sales orders
+- CSV export functionality
+- Automatic calculation of missing values
+- Fallback manual normalization when AI processing fails
 
-## Getting Started
-
-### Prerequisites
-
-- Python 3.8+
-- Node.js 14+
-- MongoDB running locally or accessible via connection string
-
-### Backend Setup
-
-1. Navigate to the backend directory:
-   ```
-   cd backend
-   ```
-
-2. Create a virtual environment:
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
-
-3. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
-
-4. Create a `.env` file with the following variables:
-   ```
-   MONGODB_URI=mongodb://localhost:27017
-   MONGODB_DB=sales_orders_db
-   EXTRACTION_API_URL=https://plankton-app-qajlk.ondigitalocean.app/extraction_api
-   MATCH_BATCH_API_URL=https://endeavor-interview-api-gzwki.ondigitalocean.app/match/batch
-   MATCH_SINGLE_API_URL=https://endeavor-interview-api-gzwki.ondigitalocean.app/match
-   ```
-
-5. Run the backend:
-   ```
-   python run.py
-   ```
-
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-   ```
-   cd frontend
-   ```
-
-2. Install dependencies:
-   ```
-   npm install
-   ```
-
-3. Start the development server:
-   ```
-   npm start
-   ```
-
-## Application Flow
-
-1. **Upload PDF**: User uploads a sales order PDF
-2. **Extract Data**: System extracts line items from the PDF
-3. **Review/Edit**: User reviews and can edit the extracted data
-4. **Save**: Data is saved to MongoDB
-5. **Match**: Items are matched with the product catalog
-6. **Adjust Matches**: User can adjust the matched products if needed
-7. **Download**: User can download the processed order as CSV
-
-## Technologies Used
+## Tech Stack
 
 ### Backend
 - FastAPI
-- MongoDB with Motor (async driver)
-- Python httpx for API requests
-- Pandas for CSV generation
-- OpenAI API for field normalization
+- MongoDB
+- PyMongo
+- Motor (Async MongoDB driver)
+- OpenAI API
+- PDF extraction tools
 
 ### Frontend
 - React
-- React Router for navigation
-- React Bootstrap for UI
-- Axios for API communication
-- React Dropzone for file uploads
+- Material UI
+- Axios
+
+## Prerequisites
+
+- Python 3.10+ 
+- Node.js 14+ 
+- MongoDB 4.4+ (standalone server)
+- OpenAI API key (for field normalization)
+
+## Installation
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/yourusername/endeavor-so-processor.git
+cd endeavor-so-processor
+```
+
+### 2. Set up the backend
+
+```bash
+cd backend
+
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows, use: venv\Scripts\activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Copy .env.example to .env and update with your values
+cp ../.env.example .env
+```
+
+### 3. Set up the frontend
+
+```bash
+cd ../frontend
+
+# Install dependencies
+npm install
+```
+
+## Configuration
+
+1. Make sure MongoDB is running on your local machine or update the connection string in your `.env` file
+2. Set up your OpenAI API key in the `.env` file for LLM field normalization
+
+## Running the Application
+
+### Start the backend server
+
+```bash
+cd backend
+source venv/bin/activate  # If not already activated
+uvicorn app.main:app --reload
+```
+
+The backend API will be available at http://localhost:8000
+
+### Start the frontend development server
+
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will be available at http://localhost:3000
+
+## Usage
+
+1. Access the web application at http://localhost:3000
+2. Upload a sales order PDF
+3. The application will extract line items from the PDF
+4. Field names will be normalized (Unit Cost → Unit Price, Qty → Quantity)
+5. View the extracted data and make any necessary edits
+6. Save the sales order
+7. Download the data as CSV if needed
+
+## API Endpoints
+
+- `GET /api/health` - Health check
+- `POST /api/extract` - Extract data from PDF
+- `POST /api/sales-orders` - Create new sales order
+- `GET /api/sales-orders` - Get all sales orders
+- `GET /api/sales-orders/{id}` - Get specific sales order
+- `GET /api/sales-orders/{id}/csv` - Download sales order as CSV
+
+## Troubleshooting
+
+### MongoDB Connection Issues
+
+Make sure MongoDB is running with:
+
+```bash
+mongod --version
+```
+
+If you're using a different MongoDB connection string, update it in your `.env` file.
+
+### PDF Extraction Problems
+
+If PDF extraction fails:
+- Check that the PDF is not password protected
+- Ensure the PDF is not a scanned image (OCR might be required)
+- Check the PDF format is standard and readable
+
+### OpenAI API Issues
+
+If field normalization fails:
+- Verify your OpenAI API key is correct
+- Check your API usage and limits
+- The application will fall back to manual normalization if AI fails
 
 
