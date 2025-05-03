@@ -4,7 +4,7 @@ A web application for extracting, normalizing, and processing sales orders from 
 
 ## Video Walkthrough
 
-[Watch the video walkthrough](https://example.com/video-link)
+[Watch the video walkthrough](https://drive.google.com/file/d/1ijDM_huSl2nSlIeEDqxvoKVcmhRUMLrq/view?usp=sharing)
 
 ## Features
 
